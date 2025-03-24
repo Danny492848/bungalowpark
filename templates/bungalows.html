@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Onze Bungalows{% endblock %}
+
+{% block content %}
+    <h1>Onze Bungalows</h1>
+    
+    <div class="bungalows-list">
+        {% for bungalow in bungalows %}
+            <div class="bungalow">
+                <h2>{{ bungalow.name }}</h2>
+                <p>Type: {{ bungalow.type }}</p>
+                <p>Capaciteit: {{ bungalow.capacity }} personen</p>
+                <p>Weekprijs: €{{ bungalow.price }}</p>
+                <button onclick="window.location.href='{{ url_for('booking', bungalow_id=bungalow.id) }}'">Boek Nu</button>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

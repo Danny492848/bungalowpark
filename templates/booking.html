@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Boeking{% endblock %}
+
+{% block content %}
+    <h1>Boek een Bungalow</h1>
+    
+    <form action="{{ url_for('booking') }}" method="POST">
+        <label for="bungalow">Kies een bungalow:</label>
+        <select name="bungalow_id" id="bungalow">
+            {% for bungalow in bungalows %}
+                <option value="{{ bungalow.id }}">{{ bungalow.name }} - €{{ bungalow.price }}/week</option>
+            {% endfor %}
+        </select>
+
+        <label for="week">Selecteer een week:</label>
+        <input type="date" name="week" id="week" required>
+
+        <button type="submit">Bevestig Boeking</button>
+    </form>
+{% endblock %}

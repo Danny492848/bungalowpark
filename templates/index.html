@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Bungalowpark{% endblock %}
+
+{% block content %}
+    <h1>Welkom bij Bungalowpark Bos en Duin!</h1>
+    <p>Geniet van een ontspannen vakantie in een van onze luxe bungalows.</p>
+    <img src="{{ url_for('static', filename='images/bungalow1.jpg') }}" alt="Bungalow">
+    <button onclick="window.location.href='{{ url_for('bungalows') }}'">Bekijk Bungalows</button>
+{% endblock %}
