@@ -5,14 +5,14 @@
 {% block content %}
     <h1>Onze mooie Bungalows</h1>
     
-    <div class="bungalows-list">
+    <div class="bungalow-lijst">
         {% for bungalow in bungalows %}
-            <div class="bungalow">
+            <div class="bungalow-card">
                 <h2>{{ bungalow.name }}</h2>
                 <p>Type: {{ bungalow.type }}</p>
-                <p>Capaciteit: {{ bungalow.capacity }} personen</p>
-                <p>Weekprijs: €{{ bungalow.price }}</p>
-                <button onclick="window.location.href='{{ url_for('booking', bungalow_id=bungalow.id) }}'">Boek Nu</button>
+                <p>Capacity: {{ bungalow.capacity }} people</p>
+                <p>Price per week: €{{ bungalow.price }}</p>
+                <a href="{{ url_for('booking', bungalow_id=bungalow.id) }}">Book Now</a>
             </div>
         {% endfor %}
     </div>
