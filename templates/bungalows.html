@@ -7,12 +7,11 @@
     
     <div class="bungalow-lijst">
         {% for bungalow in bungalows %}
-            <div class="bungalow-card">
+            <div class="bungalow">
                 <h2>{{ bungalow.name }}</h2>
-                <p>Type: {{ bungalow.type }}</p>
-                <p>Capacity: {{ bungalow.capacity }} people</p>
-                <p>Price per week: €{{ bungalow.price }}</p>
-                <a href="{{ url_for('booking', bungalow_id=bungalow.id) }}">Book Now</a>
+                <p>Type: {{ bungalow.bungalow_type.size }} persoons</p>
+                <p>Prijs per week: €{{ bungalow.bungalow_type.price_per_week }}</p>
+                <a href="{{ url_for('booking', bungalow_id=bungalow.id) }}">Boek Nu</a>
             </div>
         {% endfor %}
     </div>

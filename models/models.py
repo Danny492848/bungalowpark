@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-
+import bcrypt
 db = SQLAlchemy()
 
 # Guest Model (Users)
@@ -9,6 +9,13 @@ class Guest(db.Model, UserMixin):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
 
+    def check_password(self, password):
+        # Controleer of het ingevoerde wachtwoord overeenkomt met het gehashte wachtwoord
+        return bcrypt.check_password_hash(self.password, password)
+
+    def set_password(self, password):
+        # Zet het gehashte wachtwoord voor een nieuwe gebruiker
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 # Bungalow Type Model
 class BungalowType(db.Model):
     id = db.Column(db.Integer, primary_key=True)
