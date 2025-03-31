@@ -7,7 +7,7 @@ with app.app_context():
     db.create_all()
 
     # Voeg een admin-gebruiker toe
-    admin_user = Guest(username="admin", email="admin@example.com", is_admin=True)
+    admin_user = Guest(username="admin", email="admin@admin.com", is_admin=True)
     admin_user.set_password("admin123")  # Wachtwoord voor admin
     db.session.add(admin_user)
 

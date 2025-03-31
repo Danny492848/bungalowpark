@@ -17,7 +17,7 @@
         <tr>
             <td>{{ bungalow.name }}</td>
             <!-- Haal de prijs per week op via de relatie -->
-            <td>{{ bungalow.bungalow_type.price_per_week }}</td>
+            <td>€{{ bungalow.bungalow_type.price_per_week }},-</td>
             <td>
                 <input type="text" name="new_name" placeholder="Nieuwe naam" value="{{ bungalow.name }}">
                 <input type="number" name="new_price" placeholder="Nieuwe prijs" value="{{ bungalow.bungalow_type.price_per_week }}">

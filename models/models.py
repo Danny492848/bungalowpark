@@ -22,7 +22,7 @@ class Guest(db.Model, UserMixin):
 class BungalowType(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     size = db.Column(db.Integer, nullable=False)  # 4, 6, or 8 persons
-    price_per_week = db.Column(db.Float, nullable=False)
+    price_per_week = db.Column(db.Integer, nullable=False)
 
 # Bungalow Model
 class Bungalow(db.Model):
