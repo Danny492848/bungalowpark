@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_required, current_user, login_user, logout_user
-from models.models import db, Bungalow, Guest #Importeert Modellen
+from models.models import db, Bungalow, Booking, Guest #Importeert Modellen
 import bcrypt
 app = Flask(__name__)
 
@@ -22,46 +22,53 @@ login_manager.login_view = 'login'  # Dit is de route waar gebruikers heen gaan 
 def load_user(user_id):
     return Guest.query.get(int(user_id))
 
-# Registratie route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
 
-        # Maak een nieuwe gebruiker
-        new_user = Guest(username=username)
-        new_user.set_password(password)  # Wachtwoord wordt gehashed voor het opslaan
+        # Check of gebruiker al bestaat
+        existing_user = Guest.query.filter_by(email=email).first()
+        if existing_user:
+            flash("Email is al in gebruik!", "danger")
+            return redirect(url_for('register'))
 
+        # Nieuwe gebruiker aanmaken
+        new_user = Guest(username=username, email=email)
+        new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
 
-        return redirect(url_for('login'))  # Stuur de gebruiker naar de loginpagina
+        flash("Account succesvol aangemaakt! Je kunt nu inloggen.", "success")
+        return redirect(url_for('login'))
 
     return render_template('register.html')
 
-# Login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        email = request.form.get('email')
+        password = request.form.get('password')
 
-        user = Guest.query.filter_by(username=username).first()
-
-        if user and user.check_password(password):  # Controleer of het wachtwoord klopt
+        # Zoek gebruiker in database
+        user = Guest.query.filter_by(email=email).first()
+        if user and user.check_password(password):
             login_user(user)
-            return redirect(url_for('booking'))  # Stuur de gebruiker naar de boekingspagina
-        
-        return "Fout wachtwoord of gebruikersnaam", 401
+            flash("Succesvol ingelogd!", "success")
+            return redirect(url_for('home'))
+        else:
+            flash("Ongeldige login!", "danger")
 
     return render_template('login.html')
 
-# Logout route
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
-    return redirect(url_for('login'))  # Stuur de gebruiker terug naar de loginpagina
+    flash("Uitgelogd!", "info")
+    return redirect(url_for('home'))
 
 #Flask Login Setup
 login_manager = LoginManager()
@@ -73,6 +80,32 @@ def load_user(user_id):
     return Guest.query.get(int(user_id))
 
 
+@app.route('/admin', methods=['GET', 'POST'])
+@login_required
+def admin():
+    if not current_user.is_admin:
+        flash("Je hebt geen toegang tot deze pagina.", "danger")
+        return redirect(url_for('home'))  # Redirect naar de homepagina als je geen admin bent
+
+    # Haal alle bungalows op voor weergave
+    bungalows = Bungalow.query.all()
+
+    if request.method == 'POST':
+        bungalow_id = request.form.get('bungalow_id')
+        new_name = request.form.get('new_name')
+        new_price = request.form.get('new_price')
+
+        bungalow = Bungalow.query.get(bungalow_id)
+        if bungalow:
+            bungalow.name = new_name
+            bungalow.bungalow_type.price_per_week = new_price  # Wijzig de prijs van het bijbehorende BungalowType
+            db.session.commit()
+
+            flash(f"Bungalow '{bungalow.name}' succesvol bijgewerkt!", "success")
+        else:
+            flash("Bungalow niet gevonden!", "danger")
+
+    return render_template('admin.html', bungalows=bungalows)
 
 
 # Homepagina
@@ -88,25 +121,69 @@ def bungalows():
 
 # Boekingspagina
 @app.route('/booking', methods=['GET', 'POST'])
-@login_required  # Zorgt ervoor dat je ingelogd moet zijn om de pagina te bekijken
+@login_required
 def booking():
     if request.method == 'POST':
-        bungalow_id = request.form.get('bungalow_id')
-        week = request.form.get('week')
+        bungalow_id = request.form['bungalow_id']
+        week = request.form['week']
 
-        # Maak een nieuwe boeking voor de ingelogde gebruiker
+        # Controleer of de bungalow al geboekt is voor deze week
+        existing_booking = Booking.query.filter_by(bungalow_id=bungalow_id, week=week).first()
+        if existing_booking:
+            # Als er al een boeking is voor deze week, geef een foutmelding weer
+            return "IS al geboekt"
+
+        # Maak de nieuwe boeking aan
         new_booking = Booking(guest_id=current_user.id, bungalow_id=bungalow_id, week=week)
-        
         db.session.add(new_booking)
         db.session.commit()
+        return redirect(url_for('confirmation'))  # Of een andere pagina
 
-        return f"Boeking bevestigd voor Bungalow {bungalow_id} in week {week}"
-
-    # Haal alle bungalows op uit de database
+    # Toon alle bungalows en de bijbehorende beschikbaarheid
     bungalows = Bungalow.query.all()
-
     return render_template('booking.html', bungalows=bungalows)
 
+@app.route('/confirmation')
+def confirmation():
+    return render_template('confirmation.html')
+
+@app.route('/admin/bookings')
+@login_required
+def admin_bookings():
+    if not current_user.is_admin:
+        return redirect(url_for('home'))  # Alleen admin toegang
+
+    # Haal alle boekingen op
+    bookings = Booking.query.all()
+    return render_template('admin_bookings.html', bookings=bookings)
+
+@app.route('/admin/edit_booking/<int:booking_id>', methods=['GET', 'POST'])
+def edit_booking(booking_id):
+    booking = Booking.query.get_or_404(booking_id)
+    
+    # Haal alle gebruikers op voor de dropdown
+    users = Guest.query.all()
+    
+    if request.method == 'POST':
+        # Verwerk de veranderingen in de boeking
+        new_user_id = request.form.get('user_id')
+        new_user = Guest.query.get(new_user_id)
+        
+        if new_user:
+            booking.user_id = new_user.id
+            db.session.commit()
+            flash("Boeking succesvol aangepast!", "success")
+        else:
+            flash("Gebruiker niet gevonden.", "error")
+        
+        # Optioneel: Verwijder de boeking
+        if 'delete_booking' in request.form:
+            db.session.delete(booking)
+            db.session.commit()
+            flash("Boeking succesvol verwijderd!", "success")
+            return redirect(url_for('admin'))  # Ga terug naar het admin paneel
+
+    return render_template('edit_booking.html', booking=booking, users=users)
 
 
 if __name__ == '__main__':

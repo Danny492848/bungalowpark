@@ -1,22 +1,20 @@
 {% extends 'base.html' %}
 
-{% block title %}Boeking{% endblock %}
+{% block title %}Boek een Bungalow{% endblock %}
 
 {% block content %}
 <h1>Boek een Bungalow</h1>
 <form method="POST">
-    <label for="bungalow_id">Kies een bungalow:</label>
-    <select name="bungalow_id" id="bungalow_id">
+    <label for="bungalow_id">Kies een Bungalow:</label>
+    <select name="bungalow_id" required>
         {% for bungalow in bungalows %}
-            <option value="{{ bungalow.id }}">
-                {{ bungalow.name }} ({{ bungalow.bungalow_type.size }} persoons) - €{{ bungalow.bungalow_type.price_per_week }} per week
-            </option>
+        <option value="{{ bungalow.id }}">{{ bungalow.name }} - {{ bungalow.bungalow_type.size }} personen</option>
         {% endfor %}
     </select><br>
 
-    <label for="week">Kies een week:</label>
-    <input type="number" name="week" id="week" min="1" max="52" required><br><br>
+    <label for="week">Kies een weeknummer (1-52):</label>
+    <input type="number" name="week" min="1" max="52" required><br><br>
 
-    <button type="submit">Boek</button>
-</form>
+    <button type="submit">Boek Bungalow</button>
+</form>    
 {% endblock %}

@@ -7,15 +7,17 @@ db = SQLAlchemy()
 class Guest(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)  # Nieuw email veld
     password = db.Column(db.String(200), nullable=False)
-
-    def check_password(self, password):
-        # Controleer of het ingevoerde wachtwoord overeenkomt met het gehashte wachtwoord
-        return bcrypt.check_password_hash(self.password, password)
+    is_admin = db.Column(db.Boolean, default=False)  # Veld voor adminrechten
 
     def set_password(self, password):
-        # Zet het gehashte wachtwoord voor een nieuwe gebruiker
-        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+        """Hash het wachtwoord en sla het op"""
+        self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+    def check_password(self, password):
+        """Controleer of het wachtwoord correct is"""
+        return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
 # Bungalow Type Model
 class BungalowType(db.Model):
     id = db.Column(db.Integer, primary_key=True)
