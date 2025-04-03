@@ -4,6 +4,28 @@
 
 {% block content %}
 <h1>Boek een Bungalow</h1>
+
+<!-- Trigger Modal (Only visible if URL has #modal) -->
+{% if get_flashed_messages() %}
+<a href="#modal" id="modal-trigger"></a>
+{% endif %}
+
+<!-- CSS-Only Modal -->
+<div id="modal" class="modal-overlay">
+    <div class="modal-content">
+        <h2>Booking Error</h2>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <a href="#" class="close-btn">Close</a>
+    </div>
+</div>
+
+<!-- Booking Form -->
 <form method="POST">
     <label for="bungalow_id">Kies een Bungalow:</label>
     <select name="bungalow_id" required>
@@ -16,5 +38,36 @@
     <input type="number" name="week" min="1" max="52" required><br><br>
 
     <button type="submit">Boek Bungalow</button>
-</form>    
+</form>
+
+<!-- Styles for CSS-Only Modal -->
+<style>
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+#modal:target {
+    display: flex;
+}
+.close-btn {
+    display: block;
+    margin-top: 10px;
+    padding: 5px 10px;
+    background: red;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+</style>
+
 {% endblock %}

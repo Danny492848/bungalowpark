@@ -131,7 +131,8 @@ def booking():
         existing_booking = Booking.query.filter_by(bungalow_id=bungalow_id, week=week).first()
         if existing_booking:
             # Als er al een boeking is voor deze week, geef een foutmelding weer
-            return "IS al geboekt"
+            flash("Deze bungalow is al geboekt voor deze week!", "danger")
+            return redirect(url_for('booking') + "#modal")  # Redirect with #modal
 
         # Maak de nieuwe boeking aan
         new_booking = Booking(guest_id=current_user.id, bungalow_id=bungalow_id, week=week)
