@@ -1,32 +1,53 @@
 {% extends 'base.html' %}
+
 {% block title %}Onze Bungalows{% endblock %}
 
 {% block content %}
 <style>
+    /* Container for the carousel */
     .carousel-container {
-        position: relative;
         width: 100vw;
-        height: 100vh;
-        overflow: hidden;
+        height: 300vh;
+        overflow-y: scroll; /* Allow vertical scrolling */
+        overflow-x: hidden; /* Prevent horizontal scrolling */
+        position: relative;
+        padding-bottom: 3rem; /* Ensure space at the bottom */
+        z-index: 0; /* Set a base z-index */
     }
 
+    /* Track containing all the slides */
     .carousel-track {
         display: flex;
-        transition: transform 0.5s ease-in-out;
-        height: 100%;
+        flex-direction: column; /* Stack slides vertically */
+        width: 100%;
+        position: relative;
+        z-index: 1; /* Ensures the track is above the background */
     }
 
+    /* Individual slide */
     .bungalow-slide {
-        min-width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: 100vh; /* Set height to full viewport */
         background-size: cover;
         background-position: center;
         position: relative;
         color: white;
-        padding: 2rem;
+        padding: 3rem;
         text-shadow: 0 0 10px black;
+        transition: transform 0.3s ease-in-out; /* Smooth transition for scaling */
+        border-radius: 20px; /* Round the edges of the image */
+        overflow: hidden; /* Ensures the rounded corners are visible */
+        margin-bottom: 2rem; /* Space between slides */
+        z-index: 1; /* Ensure slides are above the background */
     }
 
+    /* Hover effect for enlarging the image */
+    .bungalow-slide:hover {
+        transform: scale(1.1); /* Enlarge the image by 10% */
+        z-index: 10; /* Ensure hovered image is above other slides */
+    }
+
+    /* Information box inside each slide */
     .bungalow-info {
         position: absolute;
         bottom: 2rem;
@@ -34,26 +55,12 @@
         background: rgba(0, 0, 0, 0.6);
         padding: 1.5rem 2rem;
         border-radius: 12px;
+        width: calc(100% - 4rem); /* Ensures button area stays the same width */
+        z-index: 5; /* Keep info box above the background, but below the image */
     }
 
-    .nav-arrow {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 3rem;
-        background: rgba(0, 0, 0, 0.5);
-        color: white;
-        border: none;
-        cursor: pointer;
-        z-index: 10;
-        padding: 1rem;
-        border-radius: 50%;
-    }
-
-    .nav-arrow.left { left: 1rem; }
-    .nav-arrow.right { right: 1rem; }
-
-    .btn {
+    /* The "Boek Nu" button stays in the same position */
+    .bungalow-info .btn {
         display: inline-block;
         margin-top: 1rem;
         background: #00a86b;
@@ -66,14 +73,12 @@
 </style>
 
 <div class="carousel-container">
-    <button class="nav-arrow left" onclick="prevSlide()">‹</button>
-    <button class="nav-arrow right" onclick="nextSlide()">›</button>
-
-    <div class="carousel-track" id="carouselTrack">
+    <!-- Carousel Track: Contains all the slides -->
+    <div class="carousel-track">
         {% set image_files = ['bungalow1.jpg', 'bungalow2.jpg', 'bungalow3.jpg', 'bungalow4.jpg', 'bungalow5.jpg', 'bungalow6.jpg', 'bungalow7.jpg', 'bungalow8.jpg'] %}
         {% for bungalow in bungalows %}
-            {% set image = image_files[loop.index0 % image_files|length] %}
-            <div class="bungalow-slide" style="background-image: url('{{ url_for('static', filename='images/' + image) }}')">
+            {% set image = image_files[loop.index0] %}
+            <div class="bungalow-slide" style="background-image: url('{{ url_for('static', filename='images/' ~ image) }}')">
                 <div class="bungalow-info">
                     <h2>{{ bungalow.name }}</h2>
                     <p>Type: {{ bungalow.bungalow_type.size }} persoons</p>
@@ -85,33 +90,4 @@
     </div>
 </div>
 
-
-
-<script>
-    let currentSlide = 0;
-    const track = document.getElementById('carouselTrack');
-    const slides = document.querySelectorAll('.bungalow-slide');
-
-    function updateSlide() {
-        track.style.transform = `translateX(-${currentSlide * 100}vw)`;
-    }
-
-    function nextSlide() {
-        currentSlide = (currentSlide + 1) % slides.length;
-        updateSlide();
-    }
-
-    function prevSlide() {
-        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-        updateSlide();
-    }
-
-    let startX = 0;
-    track.addEventListener('touchstart', e => startX = e.touches[0].clientX);
-    track.addEventListener('touchend', e => {
-        const endX = e.changedTouches[0].clientX;
-        if (endX < startX - 50) nextSlide();
-        else if (endX > startX + 50) prevSlide();
-    });
-</script>
 {% endblock %}
