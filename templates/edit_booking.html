@@ -13,9 +13,13 @@
         <option value="{{ bungalow.id }}" {% if bungalow.id == booking.bungalow_id %}selected{% endif %}>{{ bungalow.name }}</option>
         {% endfor %}
     </select><br>
-
+    <br>
     <label for="week">Kies een week:</label>
-    <input type="text" name="week" value="{{ booking.week }}" required><br><br>
+    {% set year = booking.week // 100 %}
+    {% set week = booking.week % 100 %}
+    {% set week_str = "{}-W{:02d}".format(year, week) %}
+
+    <input type="week" name="week" value="{{ week_str }}" required>
 
     <button type="submit">Bewerk Boeking</button>
 </form>
@@ -27,7 +31,7 @@
 
 <h3>Huidige Boeking:</h3>
 <p>Bungalow: {{ booking.bungalow.name }}</p>
-<p>Week: {{ booking.week }}</p>
+<p>Week {{ booking.week % 100 }} van {{ booking.week // 100 }}</p>
 <p>Huidige Gebruiker: {{ booking.guest.username }}</p>
 
 {% endblock %}

@@ -12,7 +12,7 @@ body {
     display: flex;
     justify-content: space-between;  /* Zorgt voor ruimte tussen de items */
     align-items: center;  /* Verticaal uitlijnen van de items */
-    background-color: #333;
+    background-color: #333333;
     padding: 10px 20px;
 }
 
@@ -55,4 +55,17 @@ nav a:hover {
     background: white;
     border-radius: 8px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+button {
+    display: block;
+    width: 200px;
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #276dae;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
 }

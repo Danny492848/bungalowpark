@@ -1,18 +1,117 @@
 {% extends 'base.html' %}
-
 {% block title %}Onze Bungalows{% endblock %}
 
 {% block content %}
-    <h1>Onze mooie Bungalows</h1>
-    
-    <div class="bungalow-lijst">
+<style>
+    .carousel-container {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .carousel-track {
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+        height: 100%;
+    }
+
+    .bungalow-slide {
+        min-width: 100vw;
+        height: 100vh;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+        color: white;
+        padding: 2rem;
+        text-shadow: 0 0 10px black;
+    }
+
+    .bungalow-info {
+        position: absolute;
+        bottom: 2rem;
+        left: 2rem;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 1.5rem 2rem;
+        border-radius: 12px;
+    }
+
+    .nav-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 3rem;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        cursor: pointer;
+        z-index: 10;
+        padding: 1rem;
+        border-radius: 50%;
+    }
+
+    .nav-arrow.left { left: 1rem; }
+    .nav-arrow.right { right: 1rem; }
+
+    .btn {
+        display: inline-block;
+        margin-top: 1rem;
+        background: #00a86b;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+</style>
+
+<div class="carousel-container">
+    <button class="nav-arrow left" onclick="prevSlide()">‹</button>
+    <button class="nav-arrow right" onclick="nextSlide()">›</button>
+
+    <div class="carousel-track" id="carouselTrack">
+        {% set image_files = ['bungalow1.jpg', 'bungalow2.jpg', 'bungalow3.jpg', 'bungalow4.jpg', 'bungalow5.jpg', 'bungalow6.jpg', 'bungalow7.jpg', 'bungalow8.jpg'] %}
         {% for bungalow in bungalows %}
-            <div class="bungalow">
-                <h2>{{ bungalow.name }}</h2>
-                <p>Type: {{ bungalow.bungalow_type.size }} persoons</p>
-                <p>Prijs per week: €{{ bungalow.bungalow_type.price_per_week }}</p>
-                <a href="{{ url_for('booking', bungalow_id=bungalow.id) }}">Boek Nu</a>
+            {% set image = image_files[loop.index0 % image_files|length] %}
+            <div class="bungalow-slide" style="background-image: url('{{ url_for('static', filename='images/' + image) }}')">
+                <div class="bungalow-info">
+                    <h2>{{ bungalow.name }}</h2>
+                    <p>Type: {{ bungalow.bungalow_type.size }} persoons</p>
+                    <p>Prijs per week: €{{ bungalow.bungalow_type.price_per_week }}</p>
+                    <a href="{{ url_for('booking', bungalow_id=bungalow.id) }}" class="btn">Boek Nu</a>
+                </div>
             </div>
         {% endfor %}
     </div>
+</div>
+
+
+
+<script>
+    let currentSlide = 0;
+    const track = document.getElementById('carouselTrack');
+    const slides = document.querySelectorAll('.bungalow-slide');
+
+    function updateSlide() {
+        track.style.transform = `translateX(-${currentSlide * 100}vw)`;
+    }
+
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        updateSlide();
+    }
+
+    function prevSlide() {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        updateSlide();
+    }
+
+    let startX = 0;
+    track.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+    track.addEventListener('touchend', e => {
+        const endX = e.changedTouches[0].clientX;
+        if (endX < startX - 50) nextSlide();
+        else if (endX > startX + 50) prevSlide();
+    });
+</script>
 {% endblock %}

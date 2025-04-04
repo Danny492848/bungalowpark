@@ -19,7 +19,9 @@
         <tr>
             <td>{{ booking.id }}</td>
             <td>{{ booking.bungalow.name }}</td>
-            <td>{{ booking.week }}</td>
+            <td>
+                Week {{ booking.week % 100 }} van {{ booking.week // 100 }}
+            </td>
             <td>{{ booking.guest.username }}</td>
             <td><a href="{{ url_for('edit_booking', booking_id=booking.id) }}">Bewerken</a></td>
         </tr>

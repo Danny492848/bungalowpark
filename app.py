@@ -125,24 +125,36 @@ def bungalows():
 def booking():
     if request.method == 'POST':
         bungalow_id = request.form['bungalow_id']
-        week = request.form['week']
+        week_str = request.form['week']  # e.g. "2025-W14"
 
-        # Controleer of de bungalow al geboekt is voor deze week
-        existing_booking = Booking.query.filter_by(bungalow_id=bungalow_id, week=week).first()
+        # Convert to integer format: 202514
+        try:
+            year, week = map(int, week_str.split("-W"))
+            week_int = int(f"{year}{week:02d}")
+        except ValueError:
+            flash("Ongeldig weekformaat!", "danger")
+            return redirect(url_for('booking') + "#modal")
+
+        # Check if already booked
+        existing_booking = Booking.query.filter_by(bungalow_id=bungalow_id, week=week_int).first()
         if existing_booking:
-            # Als er al een boeking is voor deze week, geef een foutmelding weer
             flash("Deze bungalow is al geboekt voor deze week!", "danger")
-            return redirect(url_for('booking') + "#modal")  # Redirect with #modal
+            return redirect(url_for('booking') + "#modal")
 
-        # Maak de nieuwe boeking aan
-        new_booking = Booking(guest_id=current_user.id, bungalow_id=bungalow_id, week=week)
+        # Create new booking
+        new_booking = Booking(
+            guest_id=current_user.id,
+            bungalow_id=bungalow_id,
+            week=week_int
+        )
         db.session.add(new_booking)
         db.session.commit()
-        return redirect(url_for('confirmation'))  # Of een andere pagina
+        return redirect(url_for('confirmation'))
 
-    # Toon alle bungalows en de bijbehorende beschikbaarheid
+    # GET request: show booking form
+    selected_bungalow_id = request.args.get('bungalow_id', type=int)
     bungalows = Bungalow.query.all()
-    return render_template('booking.html', bungalows=bungalows)
+    return render_template('booking.html', bungalows=bungalows, selected_bungalow_id=selected_bungalow_id)
 
 @app.route('/confirmation')
 def confirmation():
@@ -184,7 +196,7 @@ def edit_booking(booking_id):
             flash("Boeking succesvol verwijderd!", "success")
             return redirect(url_for('admin'))  # Ga terug naar het admin paneel
 
-    return render_template('edit_booking.html', booking=booking, users=users)
+    return render_template('edit_booking.html',bungalow=bungalows, booking=booking, users=users)
 
 
 if __name__ == '__main__':
