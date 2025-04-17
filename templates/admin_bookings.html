@@ -3,35 +3,30 @@
 {% block title %}Admin - Boekingen{% endblock %}
 
 {% block content %}
-<style>
-    table th, table td {
-        padding: 1px 20px; /* top/bottom 10px, left/right 20px */
-        text-align: left;    /* optional, for better readability */
-    }
-</style>
-<h1>Beheer Boekingen</h1>
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Bungalow</th>
-            <th>Week</th>
-            <th>Gebruiker</th>
-            <th>Aanpassen</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for booking in bookings %}
-        <tr>
-            <td>{{ booking.id }}</td>
-            <td>{{ booking.bungalow.name }}</td>
-            <td>
-                Week {{ booking.week % 100 }} van {{ booking.week // 100 }}
-            </td>
-            <td>{{ booking.guest.username }}</td>
-            <td><a href="{{ url_for('edit_booking', booking_id=booking.id) }}">Bewerken</a></td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="admin-bookings-container">
+    <h1>Beheer Boekingen</h1>
+
+    <table class="bookings-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Bungalow</th>
+                <th>Week</th>
+                <th>Gebruiker</th>
+                <th>Aanpassen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.id }}</td>
+                <td>{{ booking.bungalow.name }}</td>
+                <td>Week {{ booking.week % 100 }} van {{ booking.week // 100 }}</td>
+                <td>{{ booking.guest.username }}</td>
+                <td><a href="{{ url_for('edit_booking', booking_id=booking.id) }}" class="edit-link">Bewerken</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

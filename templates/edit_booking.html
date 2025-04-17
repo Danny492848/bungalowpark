@@ -3,35 +3,45 @@
 {% block title %}Bewerken van Boeking{% endblock %}
 
 {% block content %}
-<h1>Bewerk Boeking</h1>
+<div class="edit-booking-container">
+    <h1>Bewerk Boeking</h1>
 
-<!-- Formulier om de boeking aan te passen -->
-<form method="POST">
-    <label for="bungalow_id">Kies een Bungalow:</label>
-    <select name="bungalow_id" required>
-        {% for bungalow in bungalows %}
-        <option value="{{ bungalow.id }}" {% if bungalow.id == booking.bungalow_id %}selected{% endif %}>{{ bungalow.name }}</option>
-        {% endfor %}
-    </select><br>
-    <br>
-    <label for="week">Kies een week:</label>
-    {% set year = booking.week // 100 %}
-    {% set week = booking.week % 100 %}
-    {% set week_str = "{}-W{:02d}".format(year, week) %}
+    <!-- Boeking bewerken -->
+    <form method="POST" class="booking-form">
+        <div class="form-group">
+            <label for="bungalow_id">Kies een Bungalow:</label>
+            <select name="bungalow_id" id="bungalow_id" required>
+                {% for bungalow in bungalows %}
+                <option value="{{ bungalow.id }}"
+                    {% if bungalow.id == booking.bungalow_id %}selected{% endif %}>
+                    {{ bungalow.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
 
-    <input type="week" name="week" value="{{ week_str }}" required>
+        <div class="form-group">
+            <label for="week">Kies een week:</label>
+            {% set year = booking.week // 100 %}
+            {% set week = booking.week % 100 %}
+            {% set week_str = "{}-W{:02d}".format(year, week) %}
+            <input type="week" name="week" id="week" value="{{ week_str }}" required>
+        </div>
 
-    <button type="submit">Bewerk Boeking</button>
-</form>
+        <button type="submit" class="primary-button">Bewerk Boeking</button>
+    </form>
 
-<!-- Verwijder boeking knop -->
-<form method="POST">
-    <button type="submit" name="delete_booking">Verwijder Boeking</button>
-</form>
+    <!-- Verwijderen -->
+    <form method="POST" class="delete-form">
+        <button type="submit" name="delete_booking" class="danger-button">Verwijder Boeking</button>
+    </form>
 
-<h3>Huidige Boeking:</h3>
-<p>Bungalow: {{ booking.bungalow.name }}</p>
-<p>Week {{ booking.week % 100 }} van {{ booking.week // 100 }}</p>
-<p>Huidige Gebruiker: {{ booking.guest.username }}</p>
-
+    <!-- Huidige informatie -->
+    <div class="current-booking-info">
+        <h3>Huidige Boeking:</h3>
+        <p><strong>Bungalow:</strong> {{ booking.bungalow.name }}</p>
+        <p><strong>Week:</strong> {{ booking.week % 100 }} van {{ booking.week // 100 }}</p>
+        <p><strong>Gebruiker:</strong> {{ booking.guest.username }}</p>
+    </div>
+</div>
 {% endblock %}

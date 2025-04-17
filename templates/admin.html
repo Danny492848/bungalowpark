@@ -3,30 +3,40 @@
 {% block title %}Admin Panel{% endblock %}
 
 {% block content %}
-<h1>Admin Panel</h1>
-<h2>Bungalows beheren</h2>
+<div class="admin-container">
+    <h1>Admin Panel</h1>
+    <h2>Bungalows beheren</h2>
 
-<form method="POST">
-    <table>
-        <tr>
-            <th>Naam</th>
-            <th>Prijs per week</th>
-            <th>Acties</th>
-        </tr>
-        {% for bungalow in bungalows %}
-        <tr>
-            <td>{{ bungalow.name }}</td>
-            <!-- Haal de prijs per week op via de relatie -->
-            <td>€{{ bungalow.bungalow_type.price_per_week }},-</td>
-            <td>
-                <input type="text" name="new_name" placeholder="Nieuwe naam" value="{{ bungalow.name }}">
-                <input type="number" name="new_price" placeholder="Nieuwe prijs" value="{{ bungalow.bungalow_type.price_per_week }}">
-                <input type="hidden" name="bungalow_id" value="{{ bungalow.id }}">
-                <button type="submit">Bijwerken</button>
-            </td>
-        </tr>
-        {% endfor %}  <!-- Zorg ervoor dat de for-lus correct wordt afgesloten -->
-    </table>
-</form>
-<a href="{{ url_for('admin_bookings') }}">Beheer Boekingen</a>
+    <form method="POST">
+        <table class="bungalow-table">
+            <thead>
+                <tr>
+                    <th>Naam</th>
+                    <th>Prijs per week</th>
+                    <th>Wijzigen</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bungalow in bungalows %}
+                <tr>
+                    <td>{{ bungalow.name }}</td>
+                    <td>€{{ bungalow.bungalow_type.price_per_week }},-</td>
+                    <td>
+                        <div class="edit-fields">
+                            <input type="text" name="new_name" placeholder="Nieuwe naam" value="{{ bungalow.name }}" required>
+                            <input type="number" name="new_price" step="0.01" placeholder="Nieuwe prijs" value="{{ bungalow.bungalow_type.price_per_week }}" required>
+                            <input type="hidden" name="bungalow_id" value="{{ bungalow.id }}">
+                            <button type="submit">Bijwerken</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+
+    <div class="admin-links">
+        <a href="{{ url_for('admin_bookings') }}" class="link-button">Beheer Boekingen</a>
+    </div>
+</div>
 {% endblock %}

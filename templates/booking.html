@@ -3,75 +3,47 @@
 {% block title %}Boek een Bungalow{% endblock %}
 
 {% block content %}
-<h1>Boek een Bungalow</h1>
+<div class="booking-container">
+    <h1>Boek een Bungalow</h1>
 
-<!-- Trigger Modal (Only visible if URL has #modal) -->
-{% if get_flashed_messages() %}
-<a href="#modal" id="modal-trigger"></a>
-{% endif %}
+    <!-- Trigger Modal (hidden, auto-triggered if messages exist) -->
+    {% if get_flashed_messages() %}
+    <a href="#modal" id="modal-trigger" style="display:none;"></a>
+    {% endif %}
 
-<!-- CSS-Only Modal -->
-<div id="modal" class="modal-overlay">
-    <div class="modal-content">
-        <h2>Booking Error</h2>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
+    <!-- CSS-Only Modal -->
+    <div id="modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Boekingsfout</h2>
+            {% with messages = get_flashed_messages() %}
                 {% for message in messages %}
                     <p>{{ message }}</p>
                 {% endfor %}
-            {% endif %}
-        {% endwith %}
-        <a href="#" class="close-btn">Close</a>
+            {% endwith %}
+            <a href="#" class="close-btn">Sluiten</a>
+        </div>
     </div>
+
+    <!-- Booking Form -->
+    <form method="POST" class="booking-form">
+        <div class="form-group">
+            <label for="bungalow_id">Kies een Bungalow</label>
+            <select name="bungalow_id" id="bungalow_id" required>
+                {% for bungalow in bungalows %}
+                <option value="{{ bungalow.id }}"
+                    {% if selected_bungalow_id == bungalow.id %}selected{% endif %}>
+                    {{ bungalow.name }} – {{ bungalow.bungalow_type.size }} personen
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="week">Kies een week</label>
+            <input type="week" name="week" id="week" required>
+        </div>
+
+        <button type="submit" class="booking-button">Boek Bungalow</button>
+    </form>
 </div>
-
-<!-- Booking Form -->
-<form method="POST">
-    <label for="bungalow_id">Kies een Bungalow:</label>
-    <select name="bungalow_id" required>
-        {% for bungalow in bungalows %}
-        <option value="{{ bungalow.id }}"
-            {% if selected_bungalow_id == bungalow.id %}selected{% endif %}>
-            {{ bungalow.name }} - {{ bungalow.bungalow_type.size }} personen
-        </option>
-        {% endfor %}
-    </select>
-    
-
-    <label for="week">Kies een week:</label>
-    <input type="week" name="week" id="week" required><br>
-
-    <button type="submit">Boek Bungalow</button>
-</form>
-
-<!-- Styles for CSS-Only Modal -->
-<style>
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-}
-.modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-}
-#modal:target {
-    display: flex;
-}
-.close-btn {
-    display: block;
-    margin-top: 10px;
-    padding: 5px 10px;
-    background: red;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-}
-</style>
-
 {% endblock %}
