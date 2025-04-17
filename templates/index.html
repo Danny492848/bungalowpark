@@ -3,12 +3,12 @@
 {% block title %}Home - Bungalowpark{% endblock %}
 
 {% block content %}
-<div style="text-align: center;">
-    <h1>Welkom bij Bungalowpark Bos en Duin!</h1>
-    <p>Geniet van een relaxed vakantie in een van onze luxe bungalows.</p>
-    <img src="{{ url_for('static', filename='images/background.jpg') }}" alt="Bungalow" style="max-width: 50%; height: auto;">
-    <br><br>
-    <button onclick="window.location.href='{{ url_for('bungalows') }}'">Bekijk Bungalows</button>
+<div class="home-container">
+    <h1>Welkom bij <span>Bungalowpark Bos en Duin</span>!</h1>
+    <p>Geniet van een ontspannen vakantie in een van onze luxe bungalows, midden in de natuur.</p>
+    
+    <img src="{{ url_for('static', filename='images/background.jpg') }}" alt="Bungalow" class="hero-image">
+
+    <a href="{{ url_for('bungalows') }}" class="cta-button">Bekijk Bungalows</a>
 </div>
 {% endblock %}
-
