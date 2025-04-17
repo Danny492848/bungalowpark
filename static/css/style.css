@@ -12,7 +12,7 @@ body {
     display: flex;
     justify-content: space-between;  /* Zorgt voor ruimte tussen de items */
     align-items: center;  /* Verticaal uitlijnen van de items */
-    background-color: #333333;
+    background-color: #0084ff;
     padding: 10px 20px;
 }
 
@@ -109,11 +109,7 @@ button {
     z-index: 1; /* Keeps the slide below the hovering slide */
 }
 
-/* Hover effect for enlarging the image */
-.bungalow-slide:hover {
-    transform: scale(1.1); /* Enlarge the image */
-    z-index: 10; /* Ensure the hovered image appears above the others */
-}
+
 
 /* Info section inside each slide */
 .bungalow-info {

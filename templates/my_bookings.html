@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Mijn Boekingen - Bungalowpark{% endblock %}
+
+{% block content %}
+<h1>Mijn Boekingen</h1>
+<style>
+    table th, table td {
+        padding: 1px 20px; /* top/bottom 10px, left/right 20px */
+        text-align: left;    /* optional, for better readability */
+    }
+</style>
+
+{% if bookings %}
+<table>
+    <thead>
+        <tr>
+            <th>Bungalow</th>
+            <th>Week</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for booking in bookings %}
+        <tr>
+            <td>{{ booking.bungalow.name }}</td>
+            <td>Week {{ booking.week % 100 }} van {{ booking.week // 100 }}</td>
+            <td>
+                <form action="{{ url_for('delete_booking', booking_id=booking.id) }}" method="post" style="display:inline;">
+                    <button type="submit" onclick="return confirm('Weet je zeker dat je deze boeking wilt verwijderen?')">
+                        Verwijderen
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    
+</table>
+{% else %}
+<p>Je hebt nog geen boekingen.</p>
+{% endif %}
+{% endblock %}

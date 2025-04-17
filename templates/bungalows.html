@@ -3,12 +3,14 @@
 {% block title %}Onze Bungalows{% endblock %}
 
 {% block content %}
+<h1>Onze Bungalows</h1>
+
 <style>
     /* Container for the carousel */
     .carousel-container {
-        width: 100vw;
-        height: 300vh;
-        overflow-y: scroll; /* Allow vertical scrolling */
+        width: 80vw;
+        height: 600vh;
+        overflow-y: hidden; /* Allow vertical scrolling */
         overflow-x: hidden; /* Prevent horizontal scrolling */
         position: relative;
         padding-bottom: 3rem; /* Ensure space at the bottom */
@@ -41,11 +43,7 @@
         z-index: 1; /* Ensure slides are above the background */
     }
 
-    /* Hover effect for enlarging the image */
-    .bungalow-slide:hover {
-        transform: scale(1.1); /* Enlarge the image by 10% */
-        z-index: 10; /* Ensure hovered image is above other slides */
-    }
+
 
     /* Information box inside each slide */
     .bungalow-info {

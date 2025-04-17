@@ -57,7 +57,9 @@ def login():
         if user and user.check_password(password):
             login_user(user)
             flash("Succesvol ingelogd!", "success")
-            return redirect(url_for('home'))
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('home'))
+
         else:
             flash("Ongeldige login!", "danger")
 
@@ -197,6 +199,27 @@ def edit_booking(booking_id):
             return redirect(url_for('admin'))  # Ga terug naar het admin paneel
 
     return render_template('edit_booking.html',bungalow=bungalows, booking=booking, users=users)
+
+@app.route('/my_bookings')
+@login_required
+def my_bookings():
+    bookings = Booking.query.filter_by(guest_id=current_user.id).all()
+    return render_template('my_bookings.html', bookings=bookings)
+
+@app.route('/delete_booking/<int:booking_id>', methods=['POST'])
+@login_required
+def delete_booking(booking_id):
+    booking = Booking.query.get_or_404(booking_id)
+
+    # Alleen de eigenaar van de boeking mag hem verwijderen
+    if booking.guest_id != current_user.id:
+        flash("Je mag deze boeking niet verwijderen.", "danger")
+        return redirect(url_for('my_bookings'))
+
+    db.session.delete(booking)
+    db.session.commit()
+    flash("Boeking succesvol verwijderd.", "success")
+    return redirect(url_for('my_bookings'))
 
 
 if __name__ == '__main__':
